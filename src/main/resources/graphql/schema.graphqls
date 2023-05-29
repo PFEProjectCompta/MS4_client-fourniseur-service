@@ -1,0 +1,121 @@
+type Query{
+# Query de "Client"
+    clientList:[Client]
+    clientById(id:String):Client
+# Query de "Fournisseur"
+    fournisseurList:[Fournisseur]
+    fournisseurById(id:String):Fournisseur
+}
+type Mutation{
+# Mutation de "Client"
+    ajouterClient(clientDTO:ClientDTO):Client
+    modifierClient(clientDTO:ClientDTO,id:String):Client
+    supprimerClient(id:String):Client
+# Mutation de "Fournisseur"
+    ajouterFournisseur(fournisseurDTO:FournisseurDTO):Fournisseur
+    modifierFournisseur(fournisseurDTO:FournisseurDTO,id:String):Fournisseur
+    supprimerFournisseur(id:String):Fournisseur
+}
+
+type Client{
+    id :String ,
+    nom :String ,
+    prenom :String ,
+    email :String ,
+    adresse: String,
+    ville: String ,
+    pays :String ,
+    telephone: String ,
+    societeId :String ,
+    societe :Societe ,
+    planComptableElementId :String ,
+    planComptableElement :PlanComptableElement
+}
+type Fournisseur{
+    id :String ,
+    nom :String ,
+    prenom: String ,
+    email :String ,
+    adresse: String,
+    ville: String ,
+    pays :String ,
+    telephone: String ,
+    societeId :String ,
+    societe :Societe ,
+    planComptableElementId :String ,
+    planComptableElement: PlanComptableElement
+}
+type BureauAdmine{
+    id : String,
+    nom: String ,
+    prenom: String,
+    email : String
+}
+type Bureau{
+    id :String ,
+    nom :String ,
+    adresse :String ,
+    ville :String ,
+    paye :String ,
+    numero_tele: String ,
+    email :String,
+    admine:BureauAdmine,
+    compteUtilisateurs: [CompteUtilisateur]
+}
+type Societe{
+    id :String ,
+    raison_social: String ,
+    activite :String ,
+    adresse: String,
+    compteUtilisateur: CompteUtilisateur
+}
+
+type CompteUtilisateur{
+    id: String,
+    nom :String ,
+    prenom: String ,
+    email :String ,
+    adresse: String ,
+    ville :String ,
+    pays :String ,
+    telephone: String ,
+    date_naissance : Float ,
+    actif : Boolean,
+    bureau: Bureau,
+    societes: [Societe]
+}
+type PlanComptableElement{
+    id :String ,
+    numeroCompte: String ,
+    intitule: String ,
+    reporter: Boolean,
+    compteGeneral: CompteGeneral
+}
+type CompteGeneral{
+    id :String,
+    natureCompte :String ,
+    debutFaurchette: String ,
+    finFaurchette :String
+}
+input ClientDTO{
+    nom :String ,
+    prenom :String ,
+    email :String ,
+    adresse: String,
+    ville: String ,
+    pays :String ,
+    telephone: String ,
+    societeId :String ,
+    planComptableElementId :String
+}
+input FournisseurDTO{
+    nom :String ,
+    prenom: String ,
+    email :String ,
+    adresse: String,
+    ville: String ,
+    pays :String ,
+    telephone: String ,
+    societeId :String ,
+    planComptableElementId :String
+}
