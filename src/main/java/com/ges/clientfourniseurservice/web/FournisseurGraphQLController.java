@@ -10,6 +10,8 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,16 +33,16 @@ public class FournisseurGraphQLController {
     public List<Fournisseur> fournisseurList(){
         List<Fournisseur> fournisseurList=fournisseurRepository.findAll();
         for (int i=0;i<fournisseurList.size();i++){
-            fournisseurList.get(i).setSociete(societeRestClientService.SocieteById(fournisseurList.get(i).getSocieteId()));
-            fournisseurList.get(i).setPlanComptableElement(planComptableRestClientService.planComptableElementById(fournisseurList.get(i).getPlanComptableElementId()));
+            fournisseurList.get(i).setSociete(societeRestClientService.SocieteById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),fournisseurList.get(i).getSocieteId()));
+            fournisseurList.get(i).setPlanComptableElement(planComptableRestClientService.planComptableElementById(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),fournisseurList.get(i).getPlanComptableElementId()));
         }
         return fournisseurList;
     }
     @QueryMapping
     public Fournisseur fournisseurById(@Argument String id){
         Fournisseur fournisseur=fournisseurRepository.findById(id).get();
-        fournisseur.setPlanComptableElement(planComptableRestClientService.planComptableElementById(fournisseur.getPlanComptableElementId()));
-        fournisseur.setSociete(societeRestClientService.SocieteById(fournisseur.getSocieteId()));
+        fournisseur.setPlanComptableElement(planComptableRestClientService.planComptableElementById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),fournisseur.getPlanComptableElementId()));
+        fournisseur.setSociete(societeRestClientService.SocieteById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),fournisseur.getSocieteId()));
         return fournisseur;
     }
     @MutationMapping

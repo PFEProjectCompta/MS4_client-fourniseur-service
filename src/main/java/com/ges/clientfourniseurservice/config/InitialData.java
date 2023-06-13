@@ -9,8 +9,9 @@ import com.ges.clientfourniseurservice.repository.FournisseurRepository;
 import com.ges.clientfourniseurservice.service.PlanComptableRestClientService;
 import com.ges.clientfourniseurservice.service.SocieteRestClientService;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -18,23 +19,25 @@ import java.util.UUID;
 @Component
 public class InitialData {
      private static ClientRepository clientRepository;
-     private static FournisseurRepository fournisseurRepository;
-     private static SocieteRestClientService societeRestClientService;
-     private static PlanComptableRestClientService planComptableRestClientService;
-     private static List<Societe> societes;
-     private static List<PlanComptableElement> planComptableElements;
+     private static  FournisseurRepository fournisseurRepository;
 
-    public InitialData(ClientRepository clientRepository, FournisseurRepository fournisseurRepository,
-                       SocieteRestClientService societeRestClientService,
-                       PlanComptableRestClientService planComptableRestClientService) {
+     private static SocieteRestClientService societeRestClientService;
+
+     private  static PlanComptableRestClientService planComptableRestClientService;
+//     private static List<Societe> societes;
+//     private static List<PlanComptableElement> planComptableElements;
+
+    public InitialData(ClientRepository clientRepository, FournisseurRepository fournisseurRepository, SocieteRestClientService societeRestClientService, PlanComptableRestClientService planComptableRestClientService) {
         this.clientRepository = clientRepository;
         this.fournisseurRepository = fournisseurRepository;
         this.societeRestClientService = societeRestClientService;
         this.planComptableRestClientService = planComptableRestClientService;
-        societes=societeRestClientService.allSocietes().getContent().stream().toList();
-        planComptableElements=planComptableRestClientService.allplanComptableElements().getContent().stream().toList();
     }
+
+
     public static void ajouterClient(){
+        List<Societe> societes=societeRestClientService.allSocietes(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization")).getContent().stream().toList();
+        List<PlanComptableElement> planComptableElements=planComptableRestClientService.allplanComptableElements(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization")).getContent().stream().toList();
         Random random=new Random();
         for(int i=0;i<10;i++){
             Client client=Client.builder()
@@ -53,6 +56,9 @@ public class InitialData {
         }
     }
     public static void ajouterFournisseur(){
+        List<Societe> societes=societeRestClientService.allSocietes(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization")).getContent().stream().toList();
+        List<PlanComptableElement> planComptableElements=planComptableRestClientService.allplanComptableElements(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization")).getContent().stream().toList();
+
         Random random=new Random();
         for(int i=0;i<10;i++){
             Fournisseur fournisseur=Fournisseur.builder()

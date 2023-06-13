@@ -9,6 +9,8 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,16 +32,16 @@ public class ClientGraphQLController {
     public List<Client> clientList(){
         List<Client> clientList=clientRepository.findAll();
         for (int i=0;i<clientList.size();i++){
-            clientList.get(i).setSociete(societeRestClientService.SocieteById(clientList.get(i).getSocieteId()));
-            clientList.get(i).setPlanComptableElement(planComptableRestClientService.planComptableElementById(clientList.get(i).getPlanComptableElementId()));
+            clientList.get(i).setSociete(societeRestClientService.SocieteById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),clientList.get(i).getSocieteId()));
+            clientList.get(i).setPlanComptableElement(planComptableRestClientService.planComptableElementById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),clientList.get(i).getPlanComptableElementId()));
         }
         return clientList;
     }
     @QueryMapping
     public Client clientById(@Argument String id){
         Client client=clientRepository.findById(id).get();
-        client.setPlanComptableElement(planComptableRestClientService.planComptableElementById(client.getPlanComptableElementId()));
-        client.setSociete(societeRestClientService.SocieteById(client.getSocieteId()));
+        client.setPlanComptableElement(planComptableRestClientService.planComptableElementById(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),client.getPlanComptableElementId()));
+        client.setSociete(societeRestClientService.SocieteById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),client.getSocieteId()));
         return client;
     }
     @MutationMapping
