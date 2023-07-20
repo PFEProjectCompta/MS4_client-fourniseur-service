@@ -9,4 +9,6 @@ public class CompteGeneral {
     private NatureCompte natureCompte;
     private String debutFaurchette;
     private String finFaurchette;
+    private String idSociete;
+
 }

@@ -2,9 +2,15 @@ type Query{
 # Query de "Client"
     clientList:[Client]
     clientById(id:String):Client
+    clientListByIdSociete(idSociete:String):[Client]
 # Query de "Fournisseur"
     fournisseurList:[Fournisseur]
     fournisseurById(id:String):Fournisseur
+    fournisseurByIdSociete(idSociete:String):[Fournisseur]
+# Query de "Salariee"
+#    salarieeList:[Salariee]
+    salarieeById(id:String):Salariee
+    salarieeByIdSociete(idSociete:String):[Salariee]
 }
 type Mutation{
 # Mutation de "Client"
@@ -15,6 +21,10 @@ type Mutation{
     ajouterFournisseur(fournisseurDTO:FournisseurDTO):Fournisseur
     modifierFournisseur(fournisseurDTO:FournisseurDTO,id:String):Fournisseur
     supprimerFournisseur(id:String):Fournisseur
+# Mutation de "Salariee"
+    ajouterSalariee(salarieeDTO:SalarieeDTO):Salariee
+    modifierSalariee(salarieeDTO:SalarieeDTO ,id:String):Salariee
+    supprimerSalariee(id:String):Salariee
 }
 
 type Client{
@@ -27,7 +37,6 @@ type Client{
     pays :String ,
     telephone: String ,
     societeId :String ,
-    societe :Societe ,
     planComptableElementId :String ,
     planComptableElement :PlanComptableElement
 }
@@ -41,7 +50,6 @@ type Fournisseur{
     pays :String ,
     telephone: String ,
     societeId :String ,
-    societe :Societe ,
     planComptableElementId :String ,
     planComptableElement: PlanComptableElement
 }
@@ -89,13 +97,40 @@ type PlanComptableElement{
     numeroCompte: String ,
     intitule: String ,
     reporter: Boolean,
-    compteGeneral: CompteGeneral
+    compteGeneral: CompteGeneral,
+    societeId:String
 }
 type CompteGeneral{
     id :String,
     natureCompte :String ,
     debutFaurchette: String ,
-    finFaurchette :String
+    finFaurchette :String,
+    idSociete:String
+}
+
+type Salariee{
+    id: String ,
+    nom: String ,
+    prenom: String ,
+    email: String ,
+    adresse: String,
+    ville: String ,
+    pays: String ,
+    telephone: String ,
+    societeId: String ,
+    planComptableElementId: String ,
+    planComptableElement: PlanComptableElement
+}
+input SalarieeDTO{
+    nom: String ,
+    prenom: String ,
+    email: String ,
+    adresse: String,
+    ville: String ,
+    pays: String ,
+    telephone: String ,
+    societeId: String ,
+    planComptableElementId: String ,
 }
 input ClientDTO{
     nom :String ,

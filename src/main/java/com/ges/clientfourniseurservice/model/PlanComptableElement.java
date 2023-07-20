@@ -7,6 +7,8 @@ public class PlanComptableElement {
     private String id;
     private String numeroCompte;
     private String intitule;
-    private boolean reporter;
+    private Boolean reporter;
     private CompteGeneral compteGeneral;
+    private String societeId;
+
 }

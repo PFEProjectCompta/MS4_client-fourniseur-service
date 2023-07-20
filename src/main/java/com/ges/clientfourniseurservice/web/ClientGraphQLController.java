@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,25 +29,47 @@ public class ClientGraphQLController {
         this.planComptableRestClientService = planComptableRestClientService;
         this.societeRestClientService = societeRestClientService;
     }
+
     @QueryMapping
-    public List<Client> clientList(){
-        List<Client> clientList=clientRepository.findAll();
-        for (int i=0;i<clientList.size();i++){
-            clientList.get(i).setSociete(societeRestClientService.SocieteById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),clientList.get(i).getSocieteId()));
-            clientList.get(i).setPlanComptableElement(planComptableRestClientService.planComptableElementById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),clientList.get(i).getPlanComptableElementId()));
+    public List<Client> clientList() {
+        List<Client> clientList = clientRepository.findAll();
+        for (int i = 0; i < clientList.size(); i++) {
+//            clientList.get(i).setSociete(societeRestClientService.SocieteById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),clientList.get(i).getSocieteId()));
+            clientList.get(i).setPlanComptableElement(planComptableRestClientService.planComptableElementById(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"), clientList.get(i).getPlanComptableElementId()));
         }
         return clientList;
     }
+
     @QueryMapping
-    public Client clientById(@Argument String id){
-        Client client=clientRepository.findById(id).get();
-        client.setPlanComptableElement(planComptableRestClientService.planComptableElementById(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),client.getPlanComptableElementId()));
-        client.setSociete(societeRestClientService.SocieteById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),client.getSocieteId()));
+    public Client clientById(@Argument String id) {
+        Client client = clientRepository.findById(id).get();
+        client.setPlanComptableElement(planComptableRestClientService.
+                planComptableElementById(((ServletRequestAttributes) RequestContextHolder.
+                                getRequestAttributes()).getRequest().getHeader("Authorization"),
+                        client.getPlanComptableElementId()));
+//        client.setSociete(societeRestClientService.SocieteById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),client.getSocieteId()));
         return client;
     }
+
+    @QueryMapping
+    public List<Client> clientListByIdSociete(@Argument String idSociete) {
+        List<Client> clientList = clientRepository.findAll();
+        List<Client> clientsBySociete = new ArrayList<>();
+        for (int i = 0; i < clientList.size(); i++) {
+            if (clientList.get(i).getSocieteId().equals(idSociete)) {
+                clientsBySociete.add(clientList.get(i));
+            }
+        }
+        for (int i = 0; i < clientsBySociete.size(); i++) {
+//            clientsBySociete.get(i).setSociete(societeRestClientService.SocieteById(((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"),clientsBySociete.get(i).getSocieteId()));
+            clientsBySociete.get(i).setPlanComptableElement(planComptableRestClientService.planComptableElementById(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getHeader("Authorization"), clientsBySociete.get(i).getPlanComptableElementId()));
+        }
+        return clientsBySociete;
+    }
+
     @MutationMapping
-    public Client ajouterClient(@Argument ClientDTO clientDTO,@Argument String id){
-        Client client=Client.builder()
+    public Client ajouterClient(@Argument ClientDTO clientDTO, @Argument String id) {
+        Client client = Client.builder()
                 .id(UUID.randomUUID().toString())
                 .nom(clientDTO.getNom())
                 .prenom(clientDTO.getPrenom())
@@ -57,27 +80,42 @@ public class ClientGraphQLController {
                 .telephone(clientDTO.getTelephone())
                 .societeId(clientDTO.getSocieteId())
                 .planComptableElementId(clientDTO.getPlanComptableElementId())
+                .planComptableElement(planComptableRestClientService.
+                        planComptableElementById(((ServletRequestAttributes) RequestContextHolder.
+                                        getRequestAttributes()).getRequest().getHeader("Authorization"),
+                                clientDTO.getPlanComptableElementId()))
                 .build();
-        return clientRepository.save(client);
+        clientRepository.save(client);
+        return client;
     }
+
     @MutationMapping
-    public Client modifierClient(@Argument ClientDTO clientDTO,@Argument String id){
-        Client client=clientRepository.findById(id).get();
-        client.setNom(clientDTO.getNom()==null?client.getNom():clientDTO.getNom());
-        client.setPrenom(clientDTO.getPrenom()==null?client.getPrenom():clientDTO.getPrenom());
-        client.setEmail(clientDTO.getEmail()==null?client.getEmail():clientDTO.getEmail());
-        client.setAdresse(clientDTO.getAdresse()==null?client.getAdresse():clientDTO.getAdresse());
-        client.setVille(clientDTO.getVille()==null?client.getVille():clientDTO.getVille());
-        client.setPays(clientDTO.getPays()==null?client.getPays():clientDTO.getPays());
-        client.setTelephone(clientDTO.getTelephone()==null?client.getTelephone():clientDTO.getTelephone());
-        client.setSocieteId(clientDTO.getSocieteId()==null?client.getSocieteId():clientDTO.getSocieteId());
-        client.setPlanComptableElementId(clientDTO.getPlanComptableElementId()==null?client.getPlanComptableElementId():clientDTO.getPlanComptableElementId());
-        Client clientFull=clientRepository.save(client);
+    public Client modifierClient(@Argument ClientDTO clientDTO, @Argument String id) {
+        Client client = clientRepository.findById(id).get();
+        client.setNom(clientDTO.getNom() == null ? client.getNom() : clientDTO.getNom());
+        client.setPrenom(clientDTO.getPrenom() == null ? client.getPrenom() : clientDTO.getPrenom());
+        client.setEmail(clientDTO.getEmail() == null ? client.getEmail() : clientDTO.getEmail());
+        client.setAdresse(clientDTO.getAdresse() == null ? client.getAdresse() : clientDTO.getAdresse());
+        client.setVille(clientDTO.getVille() == null ? client.getVille() : clientDTO.getVille());
+        client.setPays(clientDTO.getPays() == null ? client.getPays() : clientDTO.getPays());
+        client.setTelephone(clientDTO.getTelephone() == null ? client.getTelephone() : clientDTO.getTelephone());
+        client.setSocieteId(clientDTO.getSocieteId() == null ? client.getSocieteId() : clientDTO.getSocieteId());
+        client.setPlanComptableElementId(clientDTO.getPlanComptableElementId() == null ? client.getPlanComptableElementId() : clientDTO.getPlanComptableElementId());
+        client.setPlanComptableElement(clientDTO.getPlanComptableElementId() == null ?
+                planComptableRestClientService.planComptableElementById(((ServletRequestAttributes) RequestContextHolder.
+                                getRequestAttributes()).getRequest().getHeader("Authorization"),
+                        client.getPlanComptableElementId())
+                :
+                planComptableRestClientService.planComptableElementById(((ServletRequestAttributes) RequestContextHolder.
+                                getRequestAttributes()).getRequest().getHeader("Authorization"),
+                        clientDTO.getPlanComptableElementId()));
+        Client clientFull = clientRepository.save(client);
         return clientFull;
     }
+
     @MutationMapping
-    public Client supprimerClient(@Argument String id){
-        Client client=clientRepository.findById(id).get();
+    public Client supprimerClient(@Argument String id) {
+        Client client = clientRepository.findById(id).get();
         clientRepository.delete(client);
         return client;
     }
